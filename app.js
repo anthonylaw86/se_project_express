@@ -14,6 +14,12 @@ mongoose.connect('mongodb://127.0.0.1:27017/wtwr_db')
 const routes = require("./routes")
 app.use(express.json())
 app.use("/", indexRouter )
+app.use((req, res, next) => {
+  req.user = {
+    _id: '662a81956df96f263d72b2bd'
+  }
+  next()
+})
 
 
 app.listen(PORT, () => {
