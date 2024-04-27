@@ -9,13 +9,13 @@ const {
 
 const createItem = (req, res) => {
   const { name, weather, imageURL } = req.body;
-  // const { userId } = req.user._id;
+  const userId = req.user._id;
   console.log(req);
 
   ClothingItem.create({ name, weather, imageURL })
     .then((item) => {
       console.log(item);
-      res.status(201).send({ data: item });
+      res.status(201).send({ data: item, userId });
     })
     .catch((err) => {
       console.error(err);
