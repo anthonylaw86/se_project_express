@@ -8,11 +8,11 @@ const {
 // CREATE CLOTHING ITEM
 
 const createItem = (req, res) => {
-  const { name, weather, imageURL, _id } = req.body;
+  const { name, weather, imageUrl, _id } = req.body;
   // const userId = req.body._id;
   console.log(req.body);
 
-  ClothingItem.create({ name, weather, imageURL, _id })
+  ClothingItem.create({ name, weather, imageUrl, _id })
     .then((item) => {
       console.log(item);
       res.status(201).send({ data: item });
@@ -42,9 +42,9 @@ const getItems = (req, res) => {
 
 const updateItem = (req, res) => {
   const { itemId } = req.params;
-  const { imageURL } = req.body;
-  console.log(itemId, imageURL);
-  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageURL } })
+  const { imageUrl } = req.body;
+  console.log(itemId, imageUrl);
+  ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
     .orFail()
     .then((item) => res.status(200).send({ data: item }))
     .catch((err) => {
