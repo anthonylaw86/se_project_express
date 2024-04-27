@@ -8,14 +8,14 @@ const {
 // CREATE CLOTHING ITEM
 
 const createItem = (req, res) => {
-  const { name, weather, imageURL } = req.body;
-  const userId = req.user._id;
-  console.log(req);
+  const { name, weather, imageURL, _id } = req.body;
+  // const userId = req.body._id;
+  console.log(req.body);
 
-  ClothingItem.create({ name, weather, imageURL })
+  ClothingItem.create({ name, weather, imageURL, _id })
     .then((item) => {
       console.log(item);
-      res.status(201).send({ data: item, userId });
+      res.status(201).send({ data: item });
     })
     .catch((err) => {
       console.error(err);
