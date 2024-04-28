@@ -61,10 +61,18 @@ const deleteItem = (req, res) => {
   console.log(itemId);
   ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then((item) => res.status(200).send({ data: item }))
+    .then((item) => {
+      res.status(200).send({ data: item });
+      if (!item) {
+        return res.status(NOT_FOUND_ERROR).send({ message: err.message });
+      }
+    })
     .catch((err) => {
       console.error(err);
-      res.status(500).send({ message: err.message });
+      if (err.name === "CastError") {
+        return res.status(BAD_REQUEST_ERROR).send({ message: err.message });
+      }
+      res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 
@@ -93,6 +101,8 @@ const likeClothingItem = (req, res) => {
       return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
+
+// UNLIKE CLOTHING ITEM
 
 const unlikeClothingItem = (req, res) => {
   const userId = req.user._id;
