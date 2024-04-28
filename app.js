@@ -12,8 +12,6 @@ mongoose
   })
   .catch(console.error);
 
-
-
 app.use((req, res, next) => {
   req.user = {
     _id: "662a81956df96f263d72b2bd",
