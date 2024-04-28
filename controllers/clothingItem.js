@@ -88,7 +88,7 @@ const likeClothingItem = (req, res) => {
   )
     .orFail()
     .then((item) => {
-      res.status(200).send({ data: itemId });
+      res.status(200).send({ data: item });
     })
     .catch((err) => {
       console.error(err);
