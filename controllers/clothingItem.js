@@ -71,9 +71,8 @@ const deleteItem = (req, res) => {
       }
       if (err.name === "DocumentNotFoundError") {
         return res.status(NOT_FOUND_ERROR).send({ message: err.message });
-      } else {
-        return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
       }
+      return res.status(INTERNAL_SERVER_ERROR).send({ message: err.message });
     });
 };
 
