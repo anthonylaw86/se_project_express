@@ -12,7 +12,7 @@ mongoose
   })
   .catch(console.error);
 
-const routes = require("./routes");
+
 
 app.use((req, res, next) => {
   req.user = {
