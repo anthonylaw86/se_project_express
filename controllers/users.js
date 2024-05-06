@@ -1,8 +1,13 @@
 const User = require("../models/user");
+const bcrypt = require("bcryptjs");
+const { JWT_SECRET } = require("../utils/config");
+const jwt = require("jsonwebtoken");
 const {
   INTERNAL_SERVER_ERROR,
   BAD_REQUEST_ERROR,
   NOT_FOUND_ERROR,
+  CONFLICT_ERROR,
+  UNAUTHORIZED_ERROR,
 } = require("../utils/errors");
 
 // GET USER
@@ -14,24 +19,47 @@ const getUsers = (req, res) => {
     })
     .catch((err) => {
       console.error(err);
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
 // CREATE USER
 
 const createUser = (req, res) => {
-  const { name, avatar } = req.body;
+  const { name, avatar, email, password } = req.body;
 
-  User.create({ name, avatar })
-    .then((user) => res.status(201).send(user))
-    .catch((err) => {
-      console.error(err);
-      if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data" });
-      }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
-    });
+  User.findOne({ email }).then((user) => {
+    if (user) {
+      return res
+        .status(CONFLICT_ERROR)
+        .send({ message: "Email already exists " });
+    }
+
+    return bcrypt
+      .hash(req.body.password, 10)
+      .then((hash) =>
+        User.create({
+          name,
+          avatar,
+          email,
+          password: hash,
+        })
+      )
+      .then((user) => res.status(201).send(user))
+      .catch((err) => {
+        console.error(err);
+        if (err.name === "ValidationError") {
+          return res
+            .status(BAD_REQUEST_ERROR)
+            .send({ message: "Invalid data" });
+        }
+        return res
+          .status(INTERNAL_SERVER_ERROR)
+          .send({ message: "An error has occurred on the server." });
+      });
+  });
 };
 
 // GET USER BY ID
@@ -52,7 +80,38 @@ const getUser = (req, res) => {
       if (err.name === "CastError") {
         return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data" });
       }
-      return res.status(INTERNAL_SERVER_ERROR).send({ message: "An error has occurred on the server." });
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "An error has occurred on the server." });
+    });
+};
+
+// LOGIN
+
+const loginUser = (req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    return res
+      .status(BAD_REQUEST_ERROR)
+      .send({ message: "Email and password are required" });
+  }
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
+        expiresIn: "7d",
+      });
+      res.send({ token });
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err.message === "Incorrect email or password") {
+        return res.status(UNAUTHORIZED_ERROR).send({ message: "Unauthorized" });
+      }
+      return res
+        .statuse(INTERNAL_SERVER_ERROR)
+        .send({ message: "An error has occurred on the server." });
     });
 };
 
