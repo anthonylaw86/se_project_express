@@ -64,7 +64,7 @@ const createUser = (req, res) => {
 
 // GET USER BY ID
 
-const getUser = (req, res) => {
+const getCurrentUser = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
     .orFail(() => {
@@ -88,7 +88,7 @@ const getUser = (req, res) => {
 
 // LOGIN
 
-const loginUser = (req, res) => {
+const login = (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -110,9 +110,42 @@ const loginUser = (req, res) => {
         return res.status(UNAUTHORIZED_ERROR).send({ message: "Unauthorized" });
       }
       return res
-        .statuse(INTERNAL_SERVER_ERROR)
+        .status(INTERNAL_SERVER_ERROR)
         .send({ message: "An error has occurred on the server." });
     });
 };
 
-module.exports = { getUsers, createUser, getUser };
+const updateUserInfo = (req, res) => {
+  const userId = req.user._id;
+  const { name, avatar } = req.body;
+
+  User.findByIdAndUpdate(
+    userId,
+    { name, avatar },
+    { new: true, runValidators: true }
+  )
+    .orFail()
+    .then((user) => {
+      res.send(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err.name === "DocumentNotFoundError") {
+        return res.status(NOT_FOUND_ERROR).send({ message: err.message });
+      }
+      if (err.name === "ValidationError") {
+        return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid Data" });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "An error has occurred on the server." });
+    });
+};
+
+module.exports = {
+  getUsers,
+  createUser,
+  getCurrentUser,
+  login,
+  updateUserInfo,
+};
