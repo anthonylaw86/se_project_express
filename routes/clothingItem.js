@@ -11,12 +11,14 @@ const {
 
 router.get("/", getItems);
 
-router.post("/", authorization, createItem);
+router.use(authorization);
 
-router.delete("/:itemId", authorization, deleteItem);
+router.post("/", createItem);
 
-router.put("/:itemId/likes", authorization, likeClothingItem);
+router.delete("/:itemId", deleteItem);
 
-router.delete("/:itemId/likes", authorization, unlikeClothingItem);
+router.put("/:itemId/likes", likeClothingItem);
+
+router.delete("/:itemId/likes", unlikeClothingItem);
 
 module.exports = router;
