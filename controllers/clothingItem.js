@@ -3,6 +3,7 @@ const {
   BAD_REQUEST_ERROR,
   INTERNAL_SERVER_ERROR,
   NOT_FOUND_ERROR,
+  FORBIDDEN_ERROR,
 } = require("../utils/errors");
 
 // CREATE CLOTHING ITEM
@@ -52,7 +53,13 @@ const deleteItem = (req, res) => {
     .orFail()
     .then((item) => {
       res.status(200).send({ data: item });
+      if (String(item.owner) !== req.user._id) {
+        return res
+          .status(FORBIDDEN_ERROR)
+          .send({ message: "This item doesn't belong to you" });
+      }
     })
+
     .catch((err) => {
       console.error(err);
       if (err.name === "CastError") {
