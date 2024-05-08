@@ -115,6 +115,8 @@ const login = (req, res) => {
     });
 };
 
+// UPDATE USER
+
 const updateUserInfo = (req, res) => {
   const userId = req.user._id;
   const { name, avatar } = req.body;
