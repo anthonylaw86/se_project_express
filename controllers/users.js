@@ -47,7 +47,10 @@ const createUser = (req, res) => {
           password: hash,
         })
       )
-      .then((user) => res.status(201).send(user))
+      .then((user) => {
+        user.password = undefined;
+        return res.status(201).send(user);
+      })
       .catch((err) => {
         console.error(err);
         if (err.name === "ValidationError") {
