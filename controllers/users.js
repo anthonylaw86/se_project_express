@@ -30,21 +30,27 @@ const getUsers = (req, res) => {
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
 
-  User.findOne({ email }).then((user) => {
+  if (!email) {
+    return res
+      .status(BAD_REQUEST_ERROR)
+      .send({ message: "Email is required." });
+  }
+
+  return User.findOne({ email }).then((user) => {
     if (user) {
       return res
         .status(CONFLICT_ERROR)
-        .send({ message: "Email already exists " });
+        .send({ message: "Email already exists" });
     }
 
     return bcrypt
-      .hash(req.body.password, 10)
-      .then((hash) =>
+      .hash(password, 10)
+      .then((hashedPassword) =>
         User.create({
           name,
           avatar,
           email,
-          password: hash,
+          password: hashedPassword,
         })
       )
       .then((user) => {
@@ -53,6 +59,11 @@ const createUser = (req, res) => {
       })
       .catch((err) => {
         console.error(err);
+        if (err.name === 11000) {
+          return res
+            .status(CONFLICT_ERROR)
+            .send({ message: "Email already exists" });
+        }
         if (err.name === "ValidationError") {
           return res
             .status(BAD_REQUEST_ERROR)
@@ -68,7 +79,7 @@ const createUser = (req, res) => {
 // GET USER BY ID
 
 const getCurrentUser = (req, res) => {
-  const { userId } = req.params;
+  const userId = req.user._id;
   User.findById(userId)
     .orFail(() => {
       const error = new Error("Item ID not found");
