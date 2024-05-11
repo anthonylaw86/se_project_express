@@ -61,7 +61,7 @@ const getCurrentUser = (req, res) => {
       if (!userId) {
         return res.status(NOT_FOUND_ERROR).send({ message: "User not found" });
       }
-      return res.status(NOT_FOUND_ERROR).send({ message: "User not found" });
+      return res.status(200).send({ userId });
     })
     .catch((err) => {
       console.error(err);
