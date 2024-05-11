@@ -1,7 +1,9 @@
-const User = require("../models/user");
 const bcrypt = require("bcryptjs");
-const { JWT_SECRET } = require("../utils/config");
 const jwt = require("jsonwebtoken");
+const User = require("../models/user");
+
+const { JWT_SECRET } = require("../utils/config");
+
 const {
   INTERNAL_SERVER_ERROR,
   BAD_REQUEST_ERROR,
@@ -21,41 +23,47 @@ const createUser = (req, res) => {
       .send({ message: "Email is required." });
   }
 
-  return bcrypt
-    .hash(password, 10)
-    .then((hashedPassword) =>
-      User.create({
-        name,
-        avatar,
-        email,
-        password: hashedPassword,
-      })
-    )
-    .then((user) => {
-      user.password = undefined;
-      return res.status(201).send(user);
-    })
-    .catch((err) => {
-      console.error(err);
-      if (err.code === 11000) {
-        return res
-          .status(CONFLICT_ERROR)
-          .send({ message: "Email already exists" });
-      }
-      if (err.name === "ValidationError") {
-        return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data" });
-      }
+  return User.findOne({ email }).then((existingUser) => {
+    if (existingUser) {
       return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
-    });
+        .status(CONFLICT_ERROR)
+        .send({ message: "User already exists" });
+    }
+    return bcrypt
+      .hash(password, 10)
+      .then((hashedPassword) =>
+        User.create({
+          name,
+          avatar,
+          email,
+          password: hashedPassword,
+        })
+      )
+      .then(() => res.status(201).send({ name, avatar, email }))
+      .catch((err) => {
+        console.error(err);
+        if (err.code === 11000) {
+          return res
+            .status(CONFLICT_ERROR)
+            .send({ message: "Email already exists" });
+        }
+        if (err.name === "ValidationError") {
+          return res
+            .status(BAD_REQUEST_ERROR)
+            .send({ message: "Invalid data" });
+        }
+        return res
+          .status(INTERNAL_SERVER_ERROR)
+          .send({ message: "An error has occurred on the server." });
+      });
+  });
 };
 
 // GET USER BY ID
 
 const getCurrentUser = (req, res) => {
-  const userId = req.user._id;
-  User.findById(userId)
+  // const userId = req.user._id;
+  User.findById(req.user._id)
     .orFail()
     .then((userId) => {
       if (!userId) {
