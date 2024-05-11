@@ -10,21 +10,6 @@ const {
   UNAUTHORIZED_ERROR,
 } = require("../utils/errors");
 
-// GET USER
-
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => {
-      res.status(200).send(users);
-    })
-    .catch((err) => {
-      console.error(err);
-      return res
-        .status(INTERNAL_SERVER_ERROR)
-        .send({ message: "An error has occurred on the server." });
-    });
-};
-
 // CREATE USER
 
 const createUser = (req, res) => {
@@ -36,44 +21,34 @@ const createUser = (req, res) => {
       .send({ message: "Email is required." });
   }
 
-  return User.findOne({ email }).then((user) => {
-    if (user) {
-      return res
-        .status(CONFLICT_ERROR)
-        .send({ message: "Email already exists" });
-    }
-
-    return bcrypt
-      .hash(password, 10)
-      .then((hashedPassword) =>
-        User.create({
-          name,
-          avatar,
-          email,
-          password: hashedPassword,
-        })
-      )
-      .then((user) => {
-        user.password = undefined;
-        return res.status(201).send(user);
+  return bcrypt
+    .hash(password, 10)
+    .then((hashedPassword) =>
+      User.create({
+        name,
+        avatar,
+        email,
+        password: hashedPassword,
       })
-      .catch((err) => {
-        console.error(err);
-        if (err.name === 11000) {
-          return res
-            .status(CONFLICT_ERROR)
-            .send({ message: "Email already exists" });
-        }
-        if (err.name === "ValidationError") {
-          return res
-            .status(BAD_REQUEST_ERROR)
-            .send({ message: "Invalid data" });
-        }
+    )
+    .then((user) => {
+      user.password = undefined;
+      return res.status(201).send(user);
+    })
+    .catch((err) => {
+      console.error(err);
+      if (err.code === 11000) {
         return res
-          .status(INTERNAL_SERVER_ERROR)
-          .send({ message: "An error has occurred on the server." });
-      });
-  });
+          .status(CONFLICT_ERROR)
+          .send({ message: "Email already exists" });
+      }
+      if (err.name === "ValidationError") {
+        return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data" });
+      }
+      return res
+        .status(INTERNAL_SERVER_ERROR)
+        .send({ message: "An error has occurred on the server." });
+    });
 };
 
 // GET USER BY ID
@@ -81,11 +56,13 @@ const createUser = (req, res) => {
 const getCurrentUser = (req, res) => {
   const userId = req.user._id;
   User.findById(userId)
-    .orFail(() => {
-      const error = new Error("Item ID not found");
-      error.statusCode = NOT_FOUND_ERROR;
+    .orFail()
+    .then((userId) => {
+      if (!userId) {
+        return res.status(NOT_FOUND_ERROR).send({ message: "User not found" });
+      }
+      return res.status(NOT_FOUND_ERROR).send({ message: "User not found" });
     })
-    .then((user) => res.status(200).send(user))
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
@@ -159,7 +136,6 @@ const updateUserInfo = (req, res) => {
 };
 
 module.exports = {
-  getUsers,
   createUser,
   getCurrentUser,
   login,

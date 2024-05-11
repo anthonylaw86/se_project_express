@@ -49,15 +49,21 @@ const deleteItem = (req, res) => {
   const { itemId } = req.params;
 
   console.log(itemId);
-  ClothingItem.findByIdAndDelete({ _id: itemId })
+  ClothingItem.findById({ _id: itemId })
     .orFail()
     .then((item) => {
-      res.status(200).send({ data: item });
+      if (!item) {
+        return res.status(NOT_FOUND_ERROR).send({ message: "Item not found" });
+      }
+
       if (String(item.owner) !== req.user._id) {
         return res
           .status(FORBIDDEN_ERROR)
           .send({ message: "This item doesn't belong to you" });
       }
+      return item
+        .deleteOne(itemId)
+        .then(() => res.status(200).res.send({ message: "Item Deleted" }));
     })
 
     .catch((err) => {
