@@ -61,7 +61,9 @@ const deleteItem = (req, res) => {
           .status(FORBIDDEN_ERROR)
           .send({ message: "This item doesn't belong to you" });
       }
-      return item.deleteOne().then(() => res.status(200));
+      return item
+        .deleteOne()
+        .then(() => res.status(200).send({ message: "Item deleted" }));
     })
 
     .catch((err) => {
