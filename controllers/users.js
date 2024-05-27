@@ -65,11 +65,11 @@ const getCurrentUser = (req, res) => {
   // const userId = req.user._id;
   User.findById(req.user._id)
     .orFail()
-    .then((userId) => {
-      if (!userId) {
+    .then((user) => {
+      if (!user) {
         return res.status(NOT_FOUND_ERROR).send({ message: "User not found" });
       }
-      return res.status(200).send({ userId });
+      return res.status(200).send(user);
     })
     .catch((err) => {
       console.error(err);
