@@ -17,21 +17,29 @@ mongoose
   })
   .catch(console.error);
 
-// request logger
-app.use(requestLogger);
+// Basic request logging
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.url} - ${JSON.stringify(req.body)}`);
+  next();
+});
 
-// our routes
+// CORS and Body Parsing Middleware
 app.use(cors());
 app.use(express.json());
+
+// Request Logger
+app.use(requestLogger);
+
+// Routes
 app.use("/", indexRouter);
 
-// error logger
+// Error Logger
 app.use(errorLogger);
 
-// celebrate error handler
+// Celebrate Error Handler
 app.use(errors());
 
-// centralized handler
+// Centralized Error Handler
 app.use(errorHandler);
 
 app.listen(PORT, () => {
