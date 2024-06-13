@@ -16,7 +16,15 @@ router.use("/items", clothingItemRouter);
 
 router.post("/signin", validateUserLogin, login);
 
-router.post("/signup", validateUserInfo, createUser);
+router.post(
+  "/signup",
+  (req, res, next) => {
+    console.log(req.body);
+    next();
+  },
+  validateUserInfo,
+  createUser
+);
 
 router.use((req, res) => {
   res.status(NOT_FOUND_ERROR).send({ message: "Router not found" });
