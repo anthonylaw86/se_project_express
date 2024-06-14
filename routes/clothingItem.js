@@ -10,11 +10,10 @@ const {
 } = require("../controllers/clothingItem");
 const {
   validateClothingItem,
-  validateUserClothingId,
   validateItemId,
 } = require("../middlewares/validation");
 
-router.get("/", validateUserClothingId, getItems);
+router.get("/", getItems);
 
 router.use(authorization);
 

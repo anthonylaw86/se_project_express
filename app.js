@@ -6,7 +6,7 @@ const { errors } = require("celebrate");
 const helmet = require("helmet");
 const indexRouter = require("./routes/index");
 const errorHandler = require("./middlewares/errorHandler");
-const { limiter } = require("./middlewares/rateLimiter");
+const limiter = require("./middlewares/rateLimiter");
 
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
@@ -19,6 +19,12 @@ mongoose
     console.log("Connected to DB");
   })
   .catch(console.error);
+
+// Rate Limiter
+app.use(limiter);
+
+// Set security headers
+app.use(helmet());
 
 // Basic request logging
 app.use((req, res, next) => {
@@ -55,9 +61,3 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
-
-// Rate Limiter
-app.use(limiter);
-
-// Set security headers
-app.use(helmet());

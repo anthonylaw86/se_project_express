@@ -1,4 +1,4 @@
-import { rateLimit } from "express-rate-limit";
+const rateLimit = require("express-rate-limit");
 
 const limiter = rateLimit({
   windowMs: 20 * 60 * 1000,
@@ -7,4 +7,4 @@ const limiter = rateLimit({
   message: "The max number of API requests have been reached",
 });
 
-export default limiter;
+module.exports = limiter;
