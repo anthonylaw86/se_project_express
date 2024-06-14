@@ -18,17 +18,11 @@ const createUser = (req, res, next) => {
 
   if (!email) {
     next(new BadRequestError("Email is required"));
-    // return res
-    //   .status(BAD_REQUEST_ERROR)
-    //   .send({ message: "Email is required." });
   }
 
   return User.findOne({ email }).then((existingUser) => {
     if (existingUser) {
       next(new ConflictError("User already exists"));
-      // return res
-      //   .status(CONFLICT_ERROR)
-      //   .send({ message: "User already exists" });
     }
     return bcrypt
       .hash(password, 10)
@@ -45,20 +39,11 @@ const createUser = (req, res, next) => {
         console.error(err);
         if (err.code === 11000) {
           next(new ConflictError("Email already exists"));
-          // return res
-          //   .status(CONFLICT_ERROR)
-          //   .send({ message: "Email already exists" });
         }
         if (err.name === "ValidationError") {
           next(new BadRequestError("Invalid data"));
-          // return res
-          //   .status(BAD_REQUEST_ERROR)
-          //   .send({ message: "Invalid data" });
         }
         next(err);
-        // return res
-        //   .status(INTERNAL_SERVER_ERROR)
-        //   .send({ message: "An error has occurred on the server." });
       });
   });
 };
@@ -72,7 +57,6 @@ const getCurrentUser = (req, res, next) => {
     .then((user) => {
       if (!user) {
         next(new NotFoundError("User not found"));
-        // return res.status(NOT_FOUND_ERROR).send({ message: "User not found" });
       }
       return res.status(200).send(user);
     })
@@ -80,16 +64,12 @@ const getCurrentUser = (req, res, next) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
         next(new NotFoundError("User not found"));
-        // return res.status(NOT_FOUND_ERROR).send({ message: err.message });
+
       }
       if (err.name === "CastError") {
         next(new BadRequestError("Invalid data"));
-        // return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data" });
       }
       next(err);
-      // return res
-      //   .status(INTERNAL_SERVER_ERROR)
-      //   .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -100,9 +80,6 @@ const login = (req, res, next) => {
 
   if (!email || !password) {
     next(new BadRequestError("Email and password are required"));
-    // return res
-    //   .status(BAD_REQUEST_ERROR)
-    //   .send({ message: "Email and password are required" });
   }
 
   return User.findUserByCredentials(email, password)
@@ -116,12 +93,9 @@ const login = (req, res, next) => {
       console.error(err);
       if (err.message === "Incorrect email or password") {
         next(new UnauthorizedError("Unauthorized"));
-        // return res.status(UNAUTHORIZED_ERROR).send({ message: "Unauthorized" });
       }
       next(err);
-      // return res
-      //   .status(INTERNAL_SERVER_ERROR)
-      //   .send({ message: "An error has occurred on the server." });
+
     });
 };
 
@@ -144,16 +118,14 @@ const updateUserInfo = (req, res, next) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
         next(new NotFoundError("User not found"));
-        // return res.status(NOT_FOUND_ERROR).send({ message: err.message });
+
       }
       if (err.name === "ValidationError") {
         next(new BadRequestError("Invalid data"));
-        // return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid Data" });
+
       }
       next(err);
-      // return res
-      //   .status(INTERNAL_SERVER_ERROR)
-      //   .send({ message: "An error has occurred on the server." });
+
     });
 };
 

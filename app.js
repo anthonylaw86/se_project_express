@@ -30,6 +30,13 @@ app.use(express.json());
 // Request Logger
 app.use(requestLogger);
 
+// Crash Test
+app.get("/crash-test", () => {
+  setTimeout(() => {
+    throw new Error("Server will crash now");
+  }, 0);
+});
+
 // Routes
 app.use("/", indexRouter);
 

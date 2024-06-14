@@ -9,7 +9,6 @@ const {
 
 const createItem = (req, res, next) => {
   const { name, weather, imageUrl } = req.body;
-  // const userId = req.body._id;
 
   ClothingItem.create({ name, weather, imageUrl, owner: req.user._id })
     .then((item) => {
@@ -20,12 +19,8 @@ const createItem = (req, res, next) => {
       console.error(err);
       if (err.name === "ValidationError") {
         next(new BadRequestError("Invalid Data"));
-        // res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data" });
       } else {
         next(err);
-        // res
-        //   .status(INTERNAL_SERVER_ERROR)
-        //   .send({ message: "An error has occurred on the server." });
       }
     });
 };
@@ -38,9 +33,6 @@ const getItems = (req, res, next) => {
     .catch((err) => {
       console.error(err);
       next(err);
-      // res
-      //   .status(INTERNAL_SERVER_ERROR)
-      //   .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -55,14 +47,10 @@ const deleteItem = (req, res, next) => {
     .then((item) => {
       if (!item) {
         next(new NotFoundError("Item not found"));
-        // return res.status(NOT_FOUND_ERROR).send({ message: "Item not found" });
       }
 
       if (String(item.owner) !== req.user._id) {
         next(new ForbiddenError("This item doesn't belong to you"));
-        // return res
-        //   .status(FORBIDDEN_ERROR)
-        //   .send({ message: "This item doesn't belong to you" });
       }
       return item
         .deleteOne()
@@ -73,16 +61,11 @@ const deleteItem = (req, res, next) => {
       console.error(err);
       if (err.name === "CastError") {
         next(new BadRequestError("Invalid data"));
-        // return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data" });
       }
       if (err.name === "DocumentNotFoundError") {
-        next(new NotFoundError('Item not found'));
-        // return res.status(NOT_FOUND_ERROR).send({ message: err.message });
+        next(new NotFoundError("Item not found"));
       }
       next(err);
-      // return res
-      //   .status(INTERNAL_SERVER_ERROR)
-      //   .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -103,17 +86,12 @@ const likeClothingItem = (req, res, next) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        next(new NotFoundError('Item not found'));
-        // return res.status(NOT_FOUND_ERROR).send({ message: err.message });
+        next(new NotFoundError("Item not found"));
       }
       if (err.name === "CastError") {
-        next(new BadRequestError('Invalid item ID'));
-        // return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data" });
+        next(new BadRequestError("Invalid item ID"));
       }
       next(err);
-      // return res
-      //   .status(INTERNAL_SERVER_ERROR)
-      //   .send({ message: "An error has occurred on the server." });
     });
 };
 
@@ -135,17 +113,12 @@ const unlikeClothingItem = (req, res, next) => {
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        next(new NotFoundError('Item not found'))
-        // return res.status(NOT_FOUND_ERROR).send({ message: err.message });
+        next(new NotFoundError("Item not found"));
       }
       if (err.name === "CastError") {
-        next(new BadRequestError('Invalid data'))
-        // return res.status(BAD_REQUEST_ERROR).send({ message: "Invalid data" });
+        next(new BadRequestError("Invalid data"));
       }
-      next(err)
-      // return res
-      //   .status(INTERNAL_SERVER_ERROR)
-      //   .send({ message: "An error has occurred on the server." });
+      next(err);
     });
 };
 
