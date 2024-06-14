@@ -3,8 +3,10 @@ const cors = require("cors");
 const express = require("express");
 const mongoose = require("mongoose");
 const { errors } = require("celebrate");
+const helmet = require("helmet");
 const indexRouter = require("./routes/index");
 const errorHandler = require("./middlewares/errorHandler");
+const { limiter } = require("./middlewares/rateLimiter");
 
 const { requestLogger, errorLogger } = require("./middlewares/logger");
 
@@ -53,3 +55,9 @@ app.use(errorHandler);
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+// Rate Limiter
+app.use(limiter);
+
+// Set security headers
+app.use(helmet());
