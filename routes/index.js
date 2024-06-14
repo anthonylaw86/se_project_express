@@ -5,7 +5,7 @@ const {
   validateUserLogin,
   validateUserInfo,
 } = require("../middlewares/validation");
-const { NOT_FOUND_ERROR } = require("../utils/errors");
+const { NotFoundError } = require("../utils/Errors/notFoundError");
 
 const clothingItemRouter = require("./clothingItem");
 const userRouter = require("./users");
@@ -18,8 +18,6 @@ router.post("/signin", validateUserLogin, login);
 
 router.post("/signup", validateUserInfo, createUser);
 
-router.use((req, res) => {
-  res.status(NOT_FOUND_ERROR).send({ message: "Router not found" });
-});
+router.use((req, res, next) => next(new NotFoundError("Router not found")));
 
 module.exports = router;

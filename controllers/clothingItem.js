@@ -1,9 +1,7 @@
 const ClothingItem = require("../models/clothingItem");
-const {
-  BadRequestError,
-  NotFoundError,
-  ForbiddenError,
-} = require("../utils/errors");
+const {BadRequestError} = require('../utils/Errors/badRequestError')
+const {NotFoundError} = require('../utils/Errors/notFoundError')
+const {ForbiddenError} = require('../utils/Errors/forbiddenError')
 
 // CREATE CLOTHING ITEM
 
@@ -46,11 +44,11 @@ const deleteItem = (req, res, next) => {
     .orFail()
     .then((item) => {
       if (!item) {
-        next(new NotFoundError("Item not found"));
+        return next(new NotFoundError("Item not found"));
       }
 
       if (String(item.owner) !== req.user._id) {
-        next(new ForbiddenError("This item doesn't belong to you"));
+        return next(new ForbiddenError("This item doesn't belong to you"));
       }
       return item
         .deleteOne()

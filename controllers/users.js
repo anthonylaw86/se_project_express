@@ -4,12 +4,11 @@ const User = require("../models/user");
 
 const { JWT_SECRET } = require("../utils/config");
 
-const {
-  BadRequestError,
-  NotFoundError,
-  ConflictError,
-  UnauthorizedError,
-} = require("../utils/errors");
+const {BadRequestError} = require('../utils/Errors/badRequestError')
+const {NotFoundError} = require('../utils/Errors/notFoundError')
+const {ConflictError} = require('../utils/Errors/conflictError')
+const {UnauthorizedError} = require('../utils/Errors/unauthorizedError')
+
 
 // CREATE USER
 
@@ -34,7 +33,7 @@ const createUser = (req, res, next) => {
           password: hashedPassword,
         })
       )
-      .then(() => res.status(201).send({ name, avatar, email, password }))
+      .then(() => res.status(201).send({ name, avatar, email }))
       .catch((err) => {
         console.error(err);
         if (err.code === 11000) {
@@ -64,7 +63,6 @@ const getCurrentUser = (req, res, next) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
         next(new NotFoundError("User not found"));
-
       }
       if (err.name === "CastError") {
         next(new BadRequestError("Invalid data"));
@@ -95,7 +93,6 @@ const login = (req, res, next) => {
         next(new UnauthorizedError("Unauthorized"));
       }
       next(err);
-
     });
 };
 
@@ -118,14 +115,11 @@ const updateUserInfo = (req, res, next) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
         next(new NotFoundError("User not found"));
-
       }
       if (err.name === "ValidationError") {
         next(new BadRequestError("Invalid data"));
-
       }
       next(err);
-
     });
 };
 
