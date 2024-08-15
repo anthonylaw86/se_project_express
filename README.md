@@ -1,16 +1,12 @@
 # WTWR (What to Wear?): Back End
 
-The back-end project is focused on creating a server for the WTWR application. You’ll gain a deeper understanding of how to work with databases, set up security and testing, and deploy web applications on a remote machine. The eventual goal is to create a server with an API and user authorization.
+The back-end project is focused on creating a server for the WTWR application. Key Features API Endpoints: Implement RESTful API endpoints to facilitate data retreival, creation, updating & deletion for the WTWR application. Database Integration: Integrate with a database to store and manage application data efficiently. User Authorization: Implement authentication and authorization mechanisms to ensure secure access to the applications resources. Security Measures: Implement encryption, input validation, and other security measures to protect against common web vulnerabilities.
 
 ## Running the Project
 
 `npm run start` — to launch the server
 
 `npm run dev` — to launch the server with the hot reload feature
-
-### Testing
-
-Functionality Key Features API Endpoints: Implement RESTful API endpoints to facilitate data retreival, creation, updating & deletion for the WTWR application. Database Integration: Integrate with a database to store and manage application data efficiently. User Authorization: Implement authentication and authorization mechanisms to ensure secure access to the applications resources. Security Measures: Implement encryption, input validation, and other security measures to protect against common web vulnerabilities.
 
 ### Technologies Used
 
