@@ -46,10 +46,10 @@ Winston: Used for a simple and universal logging library with support for multip
 
 ExpressWinston: Provides middleware for request and error logging of your express.js application.
 
-### DOMAINS
+### Front-End Domain
 
 https://wtwr.madhacker.biz
 
-https://www.wtwr.madhacker.biz
+### Back-End Domain
 
 https://api.wtwr.madhacker.biz
